@@ -160,6 +160,8 @@ class MyHandler(BaseHTTPRequestHandler):
                 print(f"{Colors.GREEN}[+] Sending terminate command to client{Colors.RESET}")
                 # Mark that we're terminating the client
                 MyHandler.connection_established = False
+                # Reset signal handler to allow clean Ctrl-C
+                signal.signal(signal.SIGINT, signal.default_int_handler)
         
         # Handle download command - capture filename
         if command.strip().startswith('download '):
