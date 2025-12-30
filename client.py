@@ -19,7 +19,9 @@ parser.add_argument('--host', '-H', default='127.0.0.1',
 parser.add_argument('--port', '-p', type=int, default=443,
                     help='Attacker port (default: 443)')
 parser.add_argument('--toggle-debug', '-d', action='store_false', help='Disable debug output') # Up to you, store_true or store_false
-args = parser.parse_args()
+
+# Use parse_known_args to ignore Jupyter's -f argument
+args, unknown = parser.parse_known_args()
 
 ATTACKER_IP = args.host
 ATTACKER_PORT = args.port
