@@ -127,7 +127,21 @@ class MyHandler(BaseHTTPRequestHandler):
         if not MyHandler.connection_established:
             client_ip = self.client_address[0]
             client_port = self.client_address[1]
-            print(f"\n{Colors.GREEN}{Colors.BOLD}[+] Connection established from {client_ip}:{client_port}{Colors.RESET}")
+            
+            # Debug: Print all headers to find real client IP behind proxy
+            print(f"\n{Colors.CYAN}[DEBUG] All HTTP Headers:{Colors.RESET}")
+            for header, value in self.headers.items():
+                print(f"{Colors.CYAN}  {header}: {value}{Colors.RESET}")
+            print(f"{Colors.CYAN}[DEBUG] Direct client_address: {client_ip}:{client_port}{Colors.RESET}")
+            
+            # Check common proxy headers for real client IP
+            real_ip = (self.headers.get('X-Forwarded-For') or 
+                      self.headers.get('X-Real-IP') or 
+                      self.headers.get('CF-Connecting-IP') or
+                      client_ip)
+            print(f"{Colors.CYAN}[DEBUG] Detected real IP: {real_ip}{Colors.RESET}\n")
+            
+            print(f"\n{Colors.GREEN}{Colors.BOLD}[+] Connection established from {real_ip}(:{client_port}) - The port is the last hop port{Colors.RESET}")
             MyHandler.connection_established = True
         
         # Clear interrupt flag and restore default handler for input
